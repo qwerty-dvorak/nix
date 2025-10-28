@@ -70,7 +70,7 @@
         description = "Template for hydenix configuration";
       };
 
-      nixosConfigurations.default = defaultConfig;
+      nixosConfigurations.butiusenix = defaultConfig;
 
       packages.${system} = {
         # Use the VM configuration as default
