@@ -13,22 +13,6 @@ let
     config.allowUnfree = true;
   };
 
-  # 2. Define your custom Packet Tracer package
-  myPacketTracerUnwrapped = pkgs-unstable.ciscoPacketTracer8-unwrapped.overrideAttrs (oldAttrs: {
-    version = "9.0.0";
-
-    # Override the 'src' attribute to point to your local .deb file
-    src = ./CiscoPacketTracer_900_Ubuntu_64bit.deb;
-
-    # Append to the existing postUnpack hook if present and ensure PacketTracer is executable
-    postPatch = (oldAttrs.postPatch or "") + ''
-      chmod +x opt/pt/bin/PacketTracer
-    '';
-  });
-
-  myPacketTracer = pkgs-unstable.ciscoPacketTracer8.override {
-    ciscoPacketTracer8-unwrapped = myPacketTracerUnwrapped;
-  };
 
   cfg = config.hydenix.system;
 in
