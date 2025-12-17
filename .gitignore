@@ -8,3 +8,5 @@ output-*
 .direnv
 .git-hooks
 .hyde-cache
+
+hydenix/modules/system/CiscoPacketTracer_900_Ubuntu_64bit.deb

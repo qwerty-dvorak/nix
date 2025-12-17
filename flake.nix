@@ -3,9 +3,10 @@
 
   inputs = {
     # Hydenix's nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/01f116e4df6a15f4ccdffb1bcd41096869fb385c";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-hardware.url = "github:nixos/nixos-hardware/master";
@@ -70,7 +71,7 @@
         description = "Template for hydenix configuration";
       };
 
-      nixosConfigurations.butiusenix = defaultConfig;
+      nixosConfigurations.hydenix = defaultConfig;
 
       packages.${system} = {
         # Use the VM configuration as default

@@ -27,7 +27,7 @@ in
     timezone = lib.mkOption {
       type = lib.types.str;
       description = "Timezone";
-      example = "America/Vancouver";
+      example = "Asia/Kolkata";
     };
 
     locale = lib.mkOption {

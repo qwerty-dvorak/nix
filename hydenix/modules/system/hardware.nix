@@ -28,6 +28,7 @@ in
       libinput # libinput library
       lm_sensors # system sensors
       pciutils # pci utils
+      btop
     ];
   };
 }

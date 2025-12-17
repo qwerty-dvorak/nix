@@ -7,6 +7,29 @@
 }:
 
 let
+  pkgs-unstable = import inputs.nixpkgs-unstable {
+    system = pkgs.system;
+    # Allow unfree specifically for this import
+    config.allowUnfree = true;
+  };
+
+  # 2. Define your custom Packet Tracer package
+  myPacketTracerUnwrapped = pkgs-unstable.ciscoPacketTracer8-unwrapped.overrideAttrs (oldAttrs: {
+    version = "9.0.0";
+
+    # Override the 'src' attribute to point to your local .deb file
+    src = ./CiscoPacketTracer_900_Ubuntu_64bit.deb;
+
+    # Append to the existing postUnpack hook if present and ensure PacketTracer is executable
+    postPatch = (oldAttrs.postPatch or "") + ''
+      chmod +x opt/pt/bin/PacketTracer
+    '';
+  });
+
+  myPacketTracer = pkgs-unstable.ciscoPacketTracer8.override {
+    ciscoPacketTracer8-unwrapped = myPacketTracerUnwrapped;
+  };
+
   cfg = config.hydenix.system;
 in
 {
@@ -36,7 +59,6 @@ in
       polkit_gnome # authentication agent for privilege escalation
       dbus # inter-process communication daemon
       upower # power management/battery status daemon
-      mesa # OpenGL implementation and GPU drivers
       dconf # configuration storage system
       dconf-editor # dconf editor
       home-manager # user environment manager
@@ -56,10 +78,92 @@ in
       bash-completion # Add bash-completion package
 
       hypridle
+
+      gcc
+      go
+      # Optional but recommended tools:
+      gopls # Go language server
+      go-tools # Various Go tools (like gorename, guru)
+      gotools # More Go tools (like gomodifytags, impl)
+      delve # Go debugger
+      lazysql
+      openfortivpn
+
+      kitty
+      tmux
+      zathura
+      texlive.combined.scheme-full
+      qbittorrent-enhanced
+      vlc
+      mpv
+      libreoffice
+      ffmpeg
+      nodejs
+      pnpm
+      blender
+      postman
+      podman
+      podman-tui
+      ns-3
+      bun
+      prisma-engines
+      jetbrains.datagrip
+      uv
+      tree
+      lsof
+      ollama
+      compose2nix
+      electron-chromedriver_38
+      bison
+      flex
+      jdk21_headless
+      gradle
+      texinfoInteractive
+      pinfo
+      flyctl
+      ngrok
+      gotestsum
+      ripgrep
+      rustc
+      cargo
+      rustfmt
+      clippy
+      vulkan-tools
+      ventoy
+      zig
+      zls
+      acpi
+      pkg-config
+      wireguard-tools
+      graphite-cli
+      pulseaudio
+      unixtools.netstat
+      codex
+      wget
+      asciinema
+      unzip
+      nmap
+      ghidra
+      obsidian
+      dig
+
+      (pkgs.wrapOBS {
+        plugins = with pkgs.obs-studio-plugins; [
+          obs-source-record
+          wlrobs
+          obs-vaapi
+        ];
+      })
+
+      (python3.withPackages (ps: [
+        ps.requests
+      ]))
     ];
 
+    
     environment.variables = {
       NIXOS_OZONE_WL = "1";
+      LIBVA_DRIVER_NAME = "iHD";
     };
 
     programs.hyprland = {
@@ -69,7 +173,14 @@ in
       withUWSM = true;
     };
 
+    documentation.man = {
+        enable = true;
+        generateCaches = true;
+    };
+
     programs.nix-ld.enable = true;
+    programs.adb.enable = true;
+
 
     hardware.bluetooth = {
       enable = true;
@@ -81,14 +192,55 @@ in
         };
       };
     };
+    
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true; # Renamed from driSupport32Bit
+      extraPackages = with pkgs; [
+        intel-media-driver 
+        libvdpau-va-gl     
+      ];
+    };
 
     services = {
       dbus.enable = true;
 
+      redis.servers."".enable = true;
       upower.enable = true;
       openssh.enable = true;
       libinput.enable = true;
-    };
+      postgresql = {
+          enable = true;
+          package = pkgs.postgresql_17_jit;
+          dataDir = "/var/lib/postgresql";
+          settings = { 
+            listen_addresses = lib.mkForce "*";
+            max_connections = 100;
+            shared_buffers = "128MB";
+          };
+          authentication = ''
+            # Example: allow local connections for user 'postgres' without password
+            local all all trust
+          '';
+      };
+
+      tlp = {
+        enable = true;
+        settings = {
+            # Example: Set max frequency when on AC power.
+            # Use a value in kHz from 'cpupower frequency-info'
+            # e.g., 2500000 = 2.5GHz
+            CPU_SCALING_MAX_FREQ_ON_AC = "2500000";
+
+            # Example: Set max frequency when on battery
+            CPU_SCALING_MAX_FREQ_ON_BAT = "1800000";
+
+            # Prevent 'turbo boost' / 'cpu boost'
+            CPU_BOOST_ON_AC = 0;
+            CPU_BOOST_ON_BAT = 0;
+        };
+      };
+    };    
 
     programs.dconf.enable = true;
     programs.gnupg.agent = {
@@ -96,6 +248,8 @@ in
       enableSSHSupport = true;
     };
     programs.zsh.enable = true;
+    users.users.hydenix.extraGroups = ["adbusers"];
+
 
     # For polkit authentication
     security.polkit.enable = true;

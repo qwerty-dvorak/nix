@@ -6,7 +6,12 @@ let
   system = "x86_64-linux";
   pkgs = import inputs.nixpkgs {
     inherit system;
-    config.allowUnfree = true;
+    config = {
+      allowUnfree = true;
+      permittedInsecurePackages = [
+        "ventoy-1.1.07"
+      ];
+    };
     overlays = [
       inputs.self.overlays.default
     ];
@@ -45,20 +50,22 @@ in
   hydenix = {
     enable = true;
     hostname = "hydenix";
-    timezone = "America/Vancouver";
+    timezone = "Asia/Kolkata";
     locale = "en_CA.UTF-8";
   };
 
   users.users.hydenix = {
     isNormalUser = true;
-    initialPassword = "hydenix";
     extraGroups = [
       "wheel"
       "networkmanager"
       "video"
+      "docker"
     ];
     shell = pkgs.zsh;
   };
+
+  virtualisation.docker.enable = true;
 
   system.stateVersion = "25.05";
 }

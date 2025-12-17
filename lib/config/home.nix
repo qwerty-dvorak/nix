@@ -1,4 +1,4 @@
-{ ... }:
+{ config, pkgs, ... }:
 {
 
   hydenix.hm = {
@@ -72,5 +72,14 @@
         "Some Theme"
       ];
     };
+  };
+
+  home.packages = [
+    pkgs.chromium
+    pkgs.slack
+  ];
+
+  wayland.windowManager.hyprland.settings = {
+    monitor = ", preferred, auto, 0.8";
   };
 }

@@ -10,6 +10,14 @@ let
     # Hyde core packages
     hyde-gallery = callPackage ./hyde-gallery.nix { };
     # Additional packages
+    go = prev.go.overrideAttrs (old: rec {
+      version = "1.25.5";
+      src = prev.fetchurl {
+        url = "https://go.dev/dl/go${version}.src.tar.gz";
+        sha256 = "0kwm3af45rg8a65pbhsr3yv08a4vjnwhcwakn2hjikggj45gv992"; 
+      };
+      doCheck = false; # Skip tests to speed up build
+    });
     pokego = callPackage ./pokego.nix { };
     python-pyamdgpuinfo = callPackage ./python-pyamdgpuinfo.nix { };
     Tela-circle-dracula = callPackage ./Tela-circle-dracula.nix { };
