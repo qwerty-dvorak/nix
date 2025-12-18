@@ -19,8 +19,19 @@ in
           }
         else
           {
+            # FIX: We read the file, then patch the specific syntax error before writing it
             text = ''
-              ${lib.readFile "${pkgs.hyde}/Configs/.config/hypr/windowrules.conf"}
+              ${
+                let
+                  upstreamConfig = lib.readFile "${pkgs.hyde}/Configs/.config/hypr/windowrules.conf";
+                  patchedConfig = builtins.replaceStrings
+                    ["windowrule = float,initialtitle:^(Open File)$"]
+                    ["windowrule = float,initialTitle:^(Open File)$"]
+                    upstreamConfig;
+                in
+                  patchedConfig
+              }
+
               ${cfg.windowrules.extraConfig}
             '';
             force = true;

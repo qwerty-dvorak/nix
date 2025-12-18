@@ -45,20 +45,21 @@ in
   hydenix = {
     enable = true;
     hostname = "hydenix";
-    timezone = "America/Vancouver";
+    timezone = "Asia/Kolkata";
     locale = "en_CA.UTF-8";
   };
 
   users.users.hydenix = {
     isNormalUser = true;
-    initialPassword = "hydenix";
     extraGroups = [
       "wheel"
       "networkmanager"
       "video"
+      "docker"
     ];
     shell = pkgs.zsh;
   };
 
-  system.stateVersion = "25.05";
+    virtualisation.docker.enable = true;
+  system.stateVersion = "25.11";
 }
