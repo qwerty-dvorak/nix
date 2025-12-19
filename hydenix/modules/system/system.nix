@@ -67,10 +67,23 @@ in
       gopls # Go language server
       go-tools # Various Go tools (like gorename, guru)
       gotools # More Go tools (like gomodifytags, impl)
+      gotestsum
       delve # Go debugger
 
       vscode
       dig
+      slack
+      ripgrep
+      appimage-run
+      gcc
+      graphite-cli
+      chromium
+      zathura
+      nodejs
+      pnpm
+      ffmpeg
+      bun
+ 
     ];
 
 
@@ -93,6 +106,11 @@ in
 
     programs.nix-ld.enable = true;
     programs.adb.enable = true;
+
+    programs.appimage = {
+      enable = true;
+      binfmt = true;
+    };
 
 
     hardware.bluetooth = {
